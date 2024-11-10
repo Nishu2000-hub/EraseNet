@@ -116,8 +116,94 @@ To train and evaluate the custom inpainting models, a comprehensive and diverse 
 
 ## Project Workflow
 
-1. **Data Preparation**: Organize the Places2 dataset into training, validation, and test sets. Generate masks to simulate object removal in images.
+1. **Data Preparation**: Organize the Places2 dataset into training, validation, and test sets. Generate masks and feature extraction to simulate object removal in images.
 2. **Object Detection**: Apply pre-trained models to detect objects in images.
 3. **Object Removal**: Use detection results to mask and remove objects from images.
 4. **Inpainting Model Development**: Build and train the auto-encoder with architectural innovations. Experiment with different configurations.
 6. **Image Reconstruction**: Apply the trained model to reconstruct scenes in images. Generate final images with objects removed and backgrounds restored.
+
+
+## Part 3: Data Preprocessing, Segmentation, and Feature Extraction
+
+This section provides an overview of the data preprocessing and feature extraction steps implemented to prepare the images for the inpainting model. Each step aims to enhance the quality and usability of the dataset for the inpainting task.
+
+### 1. Methods Applied for Data Preprocessing and Feature Extraction
+
+The following steps were performed on each image in the dataset to ensure consistency and realism in the inpainting task.
+
+#### Data Preprocessing
+- **Resizing and Normalization**: Genrally the dataset Place365 given imaged as 256x256, but to be sure all images are resized to 256x256 pixels and normalized to a [0, 1] range to standardize inputs for the model and improve training stability.
+- **YOLO-Based Object Detection and Masking**: YOLOv5, a pre-trained model, is used to detect objects within each image. Detected objects are masked (set to black) in each image, simulating object removal.
+
+#### Feature Extraction
+- **Canny Edge Detection**: This algorithm detects edges in the YOLO-masked images, providing the inpainting model with structural cues by highlighting edges and boundaries.
+- **Contour Detection**: Contours are detected around masked areas, creating clear structural outlines. These outlines provide further spatial context for the inpainting model to interpret shapes and boundaries.
+
+### 2. Justification of Methods
+
+Each method was chosen for its specific contribution to the inpainting task, providing relevant structural and contextual information to guide the model as the other main thing will be traning on the auto encoder which has to be make from scratch , thats why YOLO has been used now.
+
+#### Resizing and Normalization
+- **Purpose**: Standardizing image dimensions (256x256) ensures consistency across inputs, while normalization scales pixel values to a [0, 1] range, stabilizing model training.
+- **Justification**: Consistent dimensions and normalized values prevent variability that can disrupt training, improving the model’s learning efficiency.
+
+#### YOLO-Based Object Detection and Masking
+- **Purpose**: YOLO detects objects, allowing the model to focus on real-world scenarios by removing realistic, detected objects instead of applying random masks. whiuch give more accuracy on auto encoder part and connections.
+- **Justification**: Using YOLO to detect and mask specific objects adds realism, presenting a meaningful challenge for the inpainting model to reconstruct real object regions.
+
+#### Canny Edge Detection
+- **Purpose**: Canny edge detection highlights structural details, giving the model cues about boundaries and object shapes around the masked areas.
+- **Justification**: By focusing on edges, the inpainting model gains clues on where lines and shapes should be reconstructed, which is critical for realistic inpainting.
+
+#### Contour Detection
+- **Purpose**: Contour detection outlines object shapes and boundaries around the masked areas, enhancing spatial understanding for the inpainting model.
+- **Justification**: Contours help the model recognize spatial relationships and structural integrity in the image, which is essential for accurate and realistic reconstruction.
+
+### 3. Illustrations of Processing Steps
+
+Below are sample illustrations of each step applied to the training data, demonstrating how each method prepares and processes images for inpainting.
+
+#### Original Image
+![Original Image]("C:\Users\khand\Places365_Dataset\train_100\00000002.jpg")
+
+#### Resized and Normalized Image
+![Resized and Normalized]("C:\Users\khand\Places365_Dataset\train_processed\resized_normalized\00000002.jpg")
+
+#### YOLO Masked Image (Simulating Object Removal)
+![YOLO Masked]("C:\Users\khand\Places365_Dataset\train_processed\yolo_masked\00000002.jpg")
+
+#### Edge Detection
+![Edge Detection]("C:\Users\khand\Places365_Dataset\train_processed\edge_detected\00000002.jpg")
+
+#### Contour Detection
+![Contour Detection]("C:\Users\khand\Places365_Dataset\train_processed\contour_detected\00000002.jpg")
+
+These illustrations provide a visual overview of the transformations applied to each image in the dataset, from initial preprocessing to feature extraction.
+
+
+### 4. Code and Instructions
+
+The complete code for data preprocessing, segmentation, and feature extraction has been pushed to the repository. Below is a breakdown of each script and instructions to run them.
+
+#### Code Overview
+- `data_preprocessing_and_feature_extraction.py`: This script combines all data preprocessing and feature extraction steps, including resizing, normalization, YOLO-based masking, edge detection, and contour detection.
+
+#### Instructions to Run Code
+
+1. **Data Preprocessing and Feature Extraction**: Run `data_preprocessing_and_feature_extraction.py` to preprocess and extract features from images in each dataset split.
+2. git clone https://github.com/ultralytics/yolov5 and install requirements -> pip install -r requirements.txt
+
+
+ Places365_Dataset/
+├── train_100/
+│   ├── [category_1]/
+│   │   ├── resized_normalized/
+│   │   ├── yolo_masked/
+│   │   ├── edge_detected/
+│   │   └── contour_detected/
+│   ├── [category_2]/
+│   └── ...
+├── val_100/
+└── test_100/
+
+
