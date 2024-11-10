@@ -164,19 +164,19 @@ Each method was chosen for its specific contribution to the inpainting task, pro
 Below are sample illustrations of each step applied to the training data, demonstrating how each method prepares and processes images for inpainting.
 
 ### Original Image
-![Original Image](illustrations/original_image.jpg)
+![Original Image](illustrations/original.jpg)
 
 ### Resized and Normalized
 ![Resized and Normalized](illustrations/resized_normalized.jpg)
 
 ### YOLO Masked Image
-![YOLO Masked](illustrations/yolo_masked.jpg)
+![YOLO Masked](illustrations/masked.jpg)
 
 ### Edge Detection
-![Edge Detection](illustrations/edge_detected.jpg)
+![Edge Detection](illustrations/edge.jpg)
 
 ### Contour Detection
-![Contour Detection](illustrations/contour_detected.jpg)
+![Contour Detection](illustrations/countor.jpg)
 
 These illustrations provide a visual overview of the transformations applied to each image in the dataset, from initial preprocessing to feature extraction.
 
