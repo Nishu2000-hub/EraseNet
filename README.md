@@ -163,20 +163,20 @@ Each method was chosen for its specific contribution to the inpainting task, pro
 
 Below are sample illustrations of each step applied to the training data, demonstrating how each method prepares and processes images for inpainting.
 
-#### Original Image
-![Original Image]("C:\Users\khand\Places365_Dataset\train_100\00000002.jpg")
+### Original Image
+![Original Image](illustrations/original_image.jpg)
 
-#### Resized and Normalized Image
-![Resized and Normalized]("C:\Users\khand\Places365_Dataset\train_processed\resized_normalized\00000002.jpg")
+### Resized and Normalized
+![Resized and Normalized](illustrations/resized_normalized.jpg)
 
-#### YOLO Masked Image (Simulating Object Removal)
-![YOLO Masked]("C:\Users\khand\Places365_Dataset\train_processed\yolo_masked\00000002.jpg")
+### YOLO Masked Image
+![YOLO Masked](illustrations/yolo_masked.jpg)
 
-#### Edge Detection
-![Edge Detection]("C:\Users\khand\Places365_Dataset\train_processed\edge_detected\00000002.jpg")
+### Edge Detection
+![Edge Detection](illustrations/edge_detected.jpg)
 
-#### Contour Detection
-![Contour Detection]("C:\Users\khand\Places365_Dataset\train_processed\contour_detected\00000002.jpg")
+### Contour Detection
+![Contour Detection](illustrations/contour_detected.jpg)
 
 These illustrations provide a visual overview of the transformations applied to each image in the dataset, from initial preprocessing to feature extraction.
 
