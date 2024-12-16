@@ -4,43 +4,43 @@ This project focuses on developing a system for **object removal and scene recon
 
 ## Project Goals
 
-- **Object Detection Using Pre-trained Models**: Utilize existing pre-trained object detection models (e.g., YOLO, Faster R-CNN) to identify objects in images.
-- **Develop a Custom Inpainting Solution**: Focus on creating an inpainting model by training an auto-encoder from scratch using images.
-- **Architectural Experimentation**: Investigate various auto-encoder architectures, including skip connections, dilated convolutions, and different network depths.
-- **Scene Reconstruction**: Apply the custom inpainting model to reconstruct the background seamlessly after object removal in images.
-- **Produce High-Quality Output**: Generate images with objects removed and backgrounds seamlessly reconstructed, suitable for applications like photo editing.
+- **Object Detection Using Pre-trained Models**: Utilize YOLOv8 for precise object detection to generate realistic object masks for inpainting.
+- **Develop a Custom Inpainting Solution**: Train a tailored auto-encoder with innovations like skip connections and dilated convolutions to reconstruct masked regions.
+- **Architectural Experimentation**:  Experiment with encoder-decoder architectures to optimize inpainting performance..
+- **Scene Reconstruction**: Seamlessly fill masked regions with contextually relevant content.
 
-## Features
+## **Features**
 
-### 1. Object Detection (Using Pre-trained Models)
-
-- **Purpose**: Accurately identify objects in images that need to be removed.
+### **1. Object Detection and Mask Generation**
 - **Implementation**:
-  - Utilize pre-trained models like **YOLO** or **Faster R-CNN** for object detection.
-  - This component provides input for the inpainting task but is not the primary focus.
+  - YOLOv8 is used for detecting objects in the training dataset.
+  - Detected regions are masked and stored as binary masks for inpainting.
+- **Purpose**:
+  - Create realistic masked images to simulate object removal for the training pipeline.
 
-### 2. Object Removal
-
-- **Purpose**: Remove detected objects from images to create regions requiring inpainting.
+### **2. Custom Inpainting Solution**
 - **Implementation**:
-  - Apply masks over the detected objects to eliminate them from the images.
-  - Prepare the masked images for the inpainting process.
+  - A custom auto-encoder model with **skip connections** and **dilated convolutions** to enhance reconstruction accuracy.
+  - Focuses on structural restoration using contextual cues from surrounding pixels.
+- **Purpose**:
+  - Seamlessly reconstruct masked regions with consistent textures, colors, and structural features.
 
-### 3. Custom Inpainting Solution
-
-- **Purpose**: Reconstruct and fill the background in the regions where objects have been removed.
+### **3. Preprocessing and Feature Extraction**
 - **Implementation**:
-  - **Auto-Encoder Architecture**: Train an auto-encoder from scratch tailored for inpainting tasks.
-  - **Architectural Innovations**:
-    - **Skip Connections**: To preserve high-frequency details by allowing direct information flow between encoder and decoder layers.
-    - **Dilated Convolutions**: To capture larger contextual information without increasing the model's size significantly.
+  - **Image Resizing and Normalization**: Standardize inputs to **128×128** for computational efficiency.
+  - **YOLO-Based Masking**: Generate object masks using YOLO for realism.
+  - **Edge and Contour Detection**: Extract structural cues like edges to guide the inpainting model.
+- **Purpose**:
+  - Enhance the dataset with realistic challenges and provide structural guidance to the inpainting model.
 
-### 4. Final Output
+### **4. Evaluation Metrics**
+- **Intersection Over Union (IoU)**:
+  - Quantifies the overlap between predicted and ground truth regions.
+- **Precision and Recall**:
+  - Evaluate the accuracy of reconstructed regions.
+- **Qualitative Visualization**:
+  - Generate before-and-after comparisons for visual assessment.
 
-- **Purpose**: Produce seamless images with the objects removed and the background reconstructed convincingly.
-- **Implementation**:
-  - Combine the object detection, removal, and inpainting processes.
-  - Generate high-quality images suitable for applications like photo editing and graphic design.
 
 ## Key Considerations
 
@@ -55,155 +55,185 @@ This project focuses on developing a system for **object removal and scene recon
 
 ### 1. Introduction
 
-To train and evaluate the custom inpainting models, a comprehensive and diverse dataset is essential. The **Places2** dataset has been selected for its vast variety of scenes and suitability for image inpainting tasks.
+To train and evaluate the custom inpainting models, a comprehensive and diverse dataset is essential. The **Places2** dataset, specifically the **Places365-Standard** subset, has been selected for its vast variety of scenes and suitability for image inpainting tasks. This dataset provides a challenging and diverse environment to test and train inpainting models.
 
 ### 2. Dataset Description
 
 #### a. Source
 
 - **Dataset**: Places2 Dataset (Places365-Standard)
-- **Download Link**: http://places2.csail.mit.edu/download-private.html
+- **Download Link**: [Places2 Dataset](http://places2.csail.mit.edu/download-private.html)
 - **Associated Paper**: Zhou, B., et al. "Places: A 10 million Image Database for Scene Recognition." *IEEE Transactions on Pattern Analysis and Machine Intelligence*, vol. 40, no. 6, pp. 1452-1464, 2018.
 
 #### b. Data Splitting Strategy
 
-- **Training Set (60%)**: Approximately 1.08 million images.
-- **Validation Set (20%)**: Approximately 360,000 images.
-- **Test Set (20%)**: Approximately 360,000 images.
+For this project, the dataset was split into subsets suitable for training, validation, and testing. The training and validation splits were derived from a reduced set of images (3000 images) prepared specifically for efficient inpainting experimentation. 
+
+- **Training Set (80%)**: Contains approximately 2400 images for model training.
+- **Validation Set (20%)**: Contains approximately 600 images to validate the model's performance.
 
 #### c. Differences Between Training and Validation Subsets
 
-- **Scene Diversity**: Both subsets cover the same 365 scene categories but contain different images.
-- **Complexity and Conditions**: Variations in lighting, weather conditions, and seasons are present in both sets but with different distributions.
-- 
+- **Scene Diversity**: Both subsets are derived from the same dataset but contain different images to ensure that the model generalizes well to unseen samples.
+- **Complexity and Conditions**: Training and validation subsets include diverse lighting, weather conditions, and scenes, covering the same 365 categories but with distinct images in each subset.
+
 #### d. Number of Distinct Scenes and Samples
 
 - **Scene Categories**: 365 distinct categories (e.g., beaches, forests, city streets, indoor rooms).
-- **Samples per Category**: Thousands of images per category, ensuring ample data for learning diverse features.
+- **Samples per Category**: Thousands of images per category in the original dataset, with a balanced selection for the training and validation splits.
 
 #### e. Characterization of Samples
 
-- **Resolution**: Images are standardized to **256×256 pixels** for consistency and computational efficiency.
-- **Illumination and Ambient Conditions**: Includes images taken at different times of day, under various weather conditions, and across seasons.
+- **Resolution**: All images were resized to **128×128 pixels** to reduce computational overhead while preserving contextual information.
+- **Illumination and Ambient Conditions**: Images cover a wide range of environmental conditions, ensuring robustness during training.
+
+---
 
 ## Methodology
 
 ### 1. Data Preparation
 
-- **Image Organization**: Organize images into training, validation, and test sets.
-- **Mask Generation**: Create masks to simulate object removal in images.
-- **Normalization**: Scale pixel values to a standard range suitable for neural network processing.
+- **Image Organization**: Images were categorized into training and validation sets with balanced scenes.
+- **Mask Generation**:
+  - Used **YOLOv8** to detect objects and create binary masks for the detected regions.
+  - Binary masks simulate object removal, marking regions for inpainting.
+- **Normalization**: Pixel values were scaled to the **[0, 1]** range for consistency in neural network training.
 
-### 2. Object Detection and Removal
+### 2. Object Detection and Masking
 
-- **Utilize Pre-trained Models**: Implement object detection using pre-trained models to identify objects in images.
-- **Object Masking**: Create masks based on detected bounding boxes. Remove objects by applying these masks to the original images.
+- **YOLOv8 for Object Detection**:
+  - YOLOv8 was employed to identify objects within the dataset.
+  - Detected objects were masked to simulate real-world scenarios of object removal.
+- **Realistic Masking**:
+  - YOLO-based masks create realistic inpainting challenges by mimicking actual object removal scenarios.
 
 ### 3. Inpainting and Scene Reconstruction
 
-- **Developing the Auto-Encoder**:
-  - **Baseline Model**: Start with a basic auto-encoder architecture.
-  - **Incorporate Skip Connections**: Enhance the model's ability to reconstruct fine details.
-  - **Implement Dilated Convolutions**: Allow the model to understand larger context without increasing parameters.
-- **Training the Model**: Use the training set from the Places2 dataset. Train the auto-encoder to reconstruct the missing regions in images.
+- **Custom Auto-Encoder Architecture**:
+  - **Baseline Model**: A basic auto-encoder was implemented as a starting point.
+  - **Skip Connections**: Added to preserve high-frequency details during reconstruction.
+  - **Dilated Convolutions**: Enabled the model to capture larger spatial contexts for improved reconstruction accuracy.
+- **Training Strategy**:
+  - The training subset of the Places2 dataset was used.
+  - An **L1 loss function** was applied to optimize pixel-level similarity.
+  - The model was evaluated and refined using the validation subset.
 
+---
 
 ## Expected Outcomes
 
-- **Effective Inpainting Solution**: A custom-trained auto-encoder capable of high-quality scene reconstruction after object removal in images.
-- **Insights from Architectural Variations**: Understanding how skip connections, dilated convolutions, and network depths affect inpainting performance.
-- **High-Quality Image Output**: Images where objects have been removed, and backgrounds are seamlessly reconstructed.
+1. **Effective Inpainting Solution**:
+   - A custom-trained auto-encoder capable of high-quality scene reconstruction, seamlessly restoring masked regions.
+
+2. **Architectural Insights**:
+   - Experimentation with skip connections, dilated convolutions, and depth variations will provide insights into their impact on inpainting performance.
+
+3. **High-Quality Image Outputs**:
+   - Final images will feature convincingly removed objects with reconstructed backgrounds suitable for applications like photo editing and content-aware image manipulation.
+
+---
 
 ## Project Workflow
 
-1. **Data Preparation**: Organize the Places2 dataset into training, validation, and test sets. Generate masks and feature extraction to simulate object removal in images.
-2. **Object Detection**: Apply pre-trained models to detect objects in images.
-3. **Object Removal**: Use detection results to mask and remove objects from images.
-4. **Inpainting Model Development**: Build and train the auto-encoder with architectural innovations. Experiment with different configurations.
-6. **Image Reconstruction**: Apply the trained model to reconstruct scenes in images. Generate final images with objects removed and backgrounds restored.
+1. **Data Preparation**:
+   - Organize the Places2 dataset into training and validation subsets.
+   - Apply YOLOv8-based object detection to create realistic masks.
+
+2. **Object Detection and Masking**:
+   - Detect objects and generate binary masks simulating object removal.
+
+3. **Inpainting Model Development**:
+   - Train a custom auto-encoder with architectural innovations, including skip connections and dilated convolutions.
+   - Experiment with variations in architecture to refine model performance.
+
+4. **Image Reconstruction**:
+   - Use the trained model to reconstruct masked regions in validation images.
+   - Produce high-quality results that seamlessly integrate reconstructed regions with their surrounding context.
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
 ## Part 3: Data Preprocessing, Segmentation, and Feature Extraction
 
-This section provides an overview of the data preprocessing and feature extraction steps implemented to prepare the images for the inpainting model. Each step aims to enhance the quality and usability of the dataset for the inpainting task.
+This section provides an overview of the data preprocessing and feature extraction steps implemented to prepare the images for the inpainting model. Each step ensures consistency, realism, and high-quality input for the inpainting task.
+
+---
 
 ### 1. Methods Applied for Data Preprocessing and Feature Extraction
 
-The following steps were performed on each image in the dataset to ensure consistency and realism in the inpainting task.
+The following steps were applied to each image in the dataset to create a robust training and validation pipeline for the inpainting model.
 
 #### Data Preprocessing
-- **Resizing and Normalization**: Genrally the dataset Place365 given imaged as 256x256, but to be sure all images are resized to 256x256 pixels and normalized to a [0, 1] range to standardize inputs for the model and improve training stability.
-- **YOLO-Based Object Detection and Masking**: YOLOv5, a pre-trained model, is used to detect objects within each image. Detected objects are masked (set to black) in each image, simulating object removal.
+
+- **Resizing and Normalization**: 
+  - Images from the **Places365** dataset were resized to **128×128 pixels** for computational efficiency and normalized to the **[0, 1]** range to ensure consistency across all inputs.
+  - This step standardizes the dataset, ensuring that the model receives inputs of uniform size and value range.
+
+- **YOLOv8-Based Object Detection and Masking**:
+  - **YOLOv8**, a pre-trained object detection model, was used to identify objects in the images.
+  - Detected regions were masked using binary masks (setting the regions to black) to simulate object removal, creating realistic inpainting challenges.
 
 #### Feature Extraction
-- **Canny Edge Detection**: This algorithm detects edges in the YOLO-masked images, providing the inpainting model with structural cues by highlighting edges and boundaries.
-- **Contour Detection**: Contours are detected around masked areas, creating clear structural outlines. These outlines provide further spatial context for the inpainting model to interpret shapes and boundaries.
+
+- **YOLO-Based Masking**:
+  - The project utilizes **YOLOv8** for object detection, generating binary masks for the detected regions.
+  - These masks simulate object removal by blacking out the object regions in the images.
+  - The masked images are then processed by the inpainting model to learn how to reconstruct the missing areas using surrounding contextual information.
+
+- **Masked Region Reconstruction**:
+  - Instead of applying traditional edge or contour detection, the focus is on **structural restoration** through the **auto-encoder architecture**.
+  - The custom auto-encoder with **skip connections** and **contextual encoding** allows the model to directly interpret spatial relationships and reconstruct missing             regions without explicit edge or contour inputs.
+  - This approach eliminates the need for additional preprocessing steps like edge detection, relying on the model's learned features to achieve high-quality inpainting.
+
+This strategy aligns with the project's emphasis on training a custom inpainting solution by leveraging the structural information encoded in the YOLO-generated masks and the auto-encoder's architecture.
+
+
+---
 
 ### 2. Justification of Methods
 
-Each method was chosen for its specific contribution to the inpainting task, providing relevant structural and contextual information to guide the model as the other main thing will be traning on the auto encoder which has to be make from scratch , thats why YOLO has been used now.
+The chosen preprocessing and feature extraction methods were selected to simulate real-world challenges and enhance the model's ability to reconstruct realistic scenes.
 
 #### Resizing and Normalization
-- **Purpose**: Standardizing image dimensions (256x256) ensures consistency across inputs, while normalization scales pixel values to a [0, 1] range, stabilizing model training.
-- **Justification**: Consistent dimensions and normalized values prevent variability that can disrupt training, improving the model’s learning efficiency.
 
-#### YOLO-Based Object Detection and Masking
-- **Purpose**: YOLO detects objects, allowing the model to focus on real-world scenarios by removing realistic, detected objects instead of applying random masks. whiuch give more accuracy on auto encoder part and connections.
-- **Justification**: Using YOLO to detect and mask specific objects adds realism, presenting a meaningful challenge for the inpainting model to reconstruct real object regions.
+- **Purpose**: Standardizing all images to the same size and scaling pixel values to a [0, 1] range ensures computational efficiency and model stability during training.
+- **Justification**: These steps reduce variability in the input data, ensuring that the model learns features effectively without being affected by inconsistent image dimensions or pixel value ranges.
 
-#### Canny Edge Detection
-- **Purpose**: Canny edge detection highlights structural details, giving the model cues about boundaries and object shapes around the masked areas.
-- **Justification**: By focusing on edges, the inpainting model gains clues on where lines and shapes should be reconstructed, which is critical for realistic inpainting.
+#### YOLOv8-Based Object Detection and Masking
 
-#### Contour Detection
-- **Purpose**: Contour detection outlines object shapes and boundaries around the masked areas, enhancing spatial understanding for the inpainting model.
-- **Justification**: Contours help the model recognize spatial relationships and structural integrity in the image, which is essential for accurate and realistic reconstruction.
+- **Purpose**: YOLOv8 detects objects, generating realistic masks to simulate object removal scenarios.
+- **Justification**: Using YOLO-based masks provides a realistic context for inpainting, as opposed to using random masks. This approach ensures that the model is trained on practical challenges, improving generalization for real-world applications.
+
+
+---
 
 ### 3. Illustrations of Processing Steps
 
-Below are sample illustrations of each step applied to the training data, demonstrating how each method prepares and processes images for inpainting.
+Below are sample illustrations of each step applied to the dataset, showing the transformation of images during preprocessing and feature extraction.
 
-### Original Image
-![Original Image](illustrations/original.jpg)
+#### Original Image
+![Original Image_masked_Masked_Image](illustrations/Figure_1.jpg)
 
-### Resized and Normalized
-![Resized and Normalized](illustrations/resized_normalized.jpg)
 
-### YOLO Masked Image
-![YOLO Masked](illustrations/masked.jpg)
+These illustrations demonstrate the pipeline used to prepare images for training and validation, ensuring that the model receives consistent and meaningful inputs.
 
-### Edge Detection
-![Edge Detection](illustrations/edge.jpg)
-
-### Contour Detection
-![Contour Detection](illustrations/countor.jpg)
-
-These illustrations provide a visual overview of the transformations applied to each image in the dataset, from initial preprocessing to feature extraction.
-
+---
 
 ### 4. Code and Instructions
 
-The complete code for data preprocessing, segmentation, and feature extraction has been pushed to the repository. Below is a breakdown of each script and instructions to run them.
+The complete code for data preprocessing, segmentation, and feature extraction is available in the repository. The steps are modularized into scripts, allowing for easy execution and integration into the training pipeline.
 
 #### Code Overview
-- `data_preprocessing_and_feature_extraction.py`: This script combines all data preprocessing and feature extraction steps, including resizing, normalization, YOLO-based masking, edge detection, and contour detection.
 
-#### Instructions to Run Code
+- `select_small_subset.py`: Selects a subset of images from the dataset for training and validation.
+- `generate_yolo_masks.py`: Uses YOLOv8 to detect objects and generate binary masks for masked regions.
+- `dataset.py`: Handles loading and preprocessing of images, applying YOLO-based masks and additional feature extraction.
+- `train_small.py`: Trains the custom auto-encoder model using the processed dataset.
 
-1. **Data Preprocessing and Feature Extraction**: Run `data_preprocessing_and_feature_extraction.py` to preprocess and extract features from images in each dataset split.
-2. git clone https://github.com/ultralytics/yolov5 and install requirements -> pip install -r requirements.txt
+#### Instructions to Run
 
+1. **Subset Selection**: Run `select_small_subset.py` to create a smaller, balanced subset of images for training and validation.
+   ```bash
+   python select_small_subset.py
 
- Places365_Dataset/
-├── train_100/
-│   ├── [category_1]/
-│   │   ├── resized_normalized/
-│   │   ├── yolo_masked/
-│   │   ├── edge_detected/
-│   │   └── contour_detected/
-│   ├── [category_2]/
-│   └── ...
-├── val_100/
-└── test_100/
 
 
