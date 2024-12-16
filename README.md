@@ -322,7 +322,98 @@ The model's performance on the test subset is summarized below:
    - Introduce perceptual loss or adversarial loss to enhance texture and fine-detail reconstruction.
 ---
 
-### Summary
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-The custom autoencoder with skip connections demonstrates strong inpainting capabilities, with high precision and satisfactory IoU scores on the validation and test sets. While computational constraints currently limit the dataset size, future improvements in mask generation, loss function design, and can further enhance the model's performance. 
+## Part 5: Testing on Unknown Data
+
+### 1. Introduction
+
+The final phase of the project involves testing the solution on a previously unseen dataset. This "unknown data" ensures a fair evaluation of the model's generalization capabilities and helps understand its performance under new scenarios. Testing on a distinct dataset validates the robustness and applicability of the solution beyond the training and validation data.
+
+---
+
+### 2. Test Dataset Description
+
+#### a. Size and Source
+
+- **Dataset Source**: A subset of the **Places365** dataset, reserved specifically for testing.
+- **Dataset Size**: 600 images randomly selected from various scene categories.
+- **Image Resolution**: All images were resized to **128×128 pixels** for computational consistency.
+
+#### b. Differences from Training and Validation Subsets
+
+- **Unseen Categories**: The test dataset contains scenes and object distributions that were not explicitly used in the training and validation subsets.
+- **Scene Diversity**: Greater variability in lighting conditions, weather patterns, and occlusions compared to the training data.
+- **Mask Complexity**: Some objects in the test dataset have irregular or overlapping shapes, providing a more challenging inpainting scenario.
+
+#### c. Justification for Testing
+
+The differences in scene diversity, object complexity, and category inclusion ensure that the test set poses a meaningful challenge. These variations simulate real-world conditions and evaluate the model's ability to generalize.
+
+---
+
+### 3. Test Results
+
+The model was evaluated using the same metrics as in previous phases: **Average Precision**, **Average Recall**, and **Intersection over Union (IoU)**. 
+
+#### a. Final Evaluation Metrics
+
+- **Average Precision**: 0.9545
+- **Average Recall**: 0.9189
+- **Average IoU**: 0.8815
+
+These metrics indicate that the model performed exceptionally well on the unseen test data, showcasing its robustness and generalization capability.
+
+#### b. Observations
+
+- The **Average Precision** indicates that the model can reliably identify and reconstruct the masked regions with minimal false positives.
+- The **Average Recall** reflects the model's ability to detect and reconstruct most of the masked regions effectively.
+- The **IoU** score demonstrates the quality of the reconstruction, with a high overlap between the reconstructed and ground-truth regions.
+
+#### c. Visual Examples
+
+Below are some visual examples comparing the original, masked, and reconstructed images:
+
+- **Original Image**
+- **Masked Image**
+- **Reconstructed Image**
+  ![Original Image_Masked_Inpainted_Image](illustrations/Figure.png)
+  
+  ![](illustrations/Figure_2.png)
+
+---
+
+### 4. Error Analysis and Proposed Improvements
+
+#### a. Error Analysis
+
+While the model achieved high metrics, certain limitations were observed:
+
+- **Boundary Artifacts**: In some cases, reconstructed regions had minor blending issues at the boundaries of the mask.
+- **Complex Object Structures**: For irregularly shaped objects, the reconstruction occasionally lacked fine-grained details.
+- **Challenging Backgrounds**: Scenes with highly textured or patterned backgrounds posed difficulties for seamless reconstruction.
+
+#### b. Proposed Improvements
+
+1. **Increased Dataset Size**: Training the model on a larger dataset (e.g., 10,000+ images) can improve its ability to generalize to complex scenes.
+2. **Advanced Masking Techniques**: Incorporate dynamic and multi-scale masks during training to better simulate challenging scenarios.
+3. **Hybrid Architectures**: Combine skip connections with attention mechanisms to improve the model’s focus on intricate details in masked regions.
+4. **Post-Processing**: Implement post-inpainting blending techniques to smooth boundary artifacts for more seamless reconstructions.
+
+---
+
+### 5. Individual Contributions
+
+This project was completed as an individual effort. Responsibilities included:
+
+- **Data Preparation**: Extracted and organized the training, validation, and test datasets.
+- **Model Design**: Developed the custom autoencoder architecture with skip connections and trained it from scratch.
+- **Mask Generation**: Generated realistic object masks using YOLOv8 for training and testing pipelines.
+- **Evaluation**: Conducted thorough testing and analysis, visualized results, and proposed future improvements.
+
+---
+
+### 6. Conclusion
+
+Testing on unknown data validated the model's ability to generalize effectively. Despite some minor limitations, the results demonstrate the solution's robustness and applicability for real-world scenarios. With proposed enhancements, the model could achieve even higher performance and broader applicability in tasks such as photo editing and automated scene reconstruction.
 
