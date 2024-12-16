@@ -235,5 +235,94 @@ The complete code for data preprocessing, segmentation, and feature extraction i
    ```bash
    python select_small_subset.py
 
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+## Part 4: Final Evaluation and Analysis
 
+### 1. Justification of the Choice of Classifier
+
+The primary focus of this project is to reconstruct masked regions in images after object removal. A **custom autoencoder with skip connections** was selected as the core architecture due to the following reasons:
+
+- **Skip Connections for Feature Preservation**:
+  - Skip connections enable direct flow of information between encoder and decoder layers, preserving high-frequency structural details.
+  - This helps avoid blurring and ensures accurate reconstruction of edges and textures in masked regions.
+
+- **Dilated Convolutions for Contextual Understanding**:
+  - Dilated convolutions expand the network's receptive field without increasing the number of parameters, allowing the model to capture larger contextual information.
+  - This is crucial for seamless reconstruction of complex scenes.
+
+- **Scalability and Efficiency**:
+  - The autoencoder architecture is computationally efficient and can handle large-scale datasets with ease.
+  - While the current implementation uses a subset of 3000 images due to computational constraints, the model's scalability ensures compatibility with larger datasets when resources are available.
+
+The evaluation metrics—**Intersection over Union (IoU)**, **Precision**, and **Recall**—were chosen for their relevance to inpainting tasks:
+- **IoU** measures the spatial overlap between reconstructed and ground-truth regions.
+- **Precision** evaluates how accurately the reconstructed regions match the ground truth.
+- **Recall** assesses the model's ability to reconstruct all masked regions effectively.
+
+---
+
+### 2. Evaluation Metrics and Performance
+
+#### a. Training and Validation Metrics
+
+The training and validation results showcase the model's learning progression and ability to generalize:
+
+- **Training Loss** (Final Epoch): `0.0359`
+- **Validation Loss** (Final Epoch): `0.0372`
+- **IoU on Validation Set** (Final Epoch): `0.4837`
+
+#### b. Testing Metrics
+
+The model's performance on the test subset is summarized below:
+
+- **Average Precision**: `0.9371`
+- **Average Recall**: `0.7227`
+- **Average IoU**: `0.6957`
+
+#### c. Precision-Recall Curve
+
+![Precision-Recall Curve](illustrations/precision.png)
+
+- **Interpretation**:
+  - The model achieves high precision (`0.9371`), indicating fewer false positives during reconstruction.
+  - The recall score (`0.7227`) suggests that the model successfully reconstructs a significant portion of masked regions but has room for improvement in covering all regions.
+  - High Precision (most of the curve):
+      -model is excellent at identifying the masked/inpainted regions with high confidence.
+      -The inpainted regions are likely well blended and accurately reconstructed for a significant number of pixels.
+  -Drop at High Recall:
+      -When the model tries to predict all possible masked pixels (maximize recall), it starts over-predicting, resulting in false positives.
+      -This could mean that some areas outside the mask or boundary pixels are incorrectly predicted as masked/inpainted.
+
+---
+
+### 3. Observations and Suggested Improvements
+
+#### Observations
+
+- **Training vs. Validation Performance**:
+  - The training and validation losses remain closely aligned, indicating no signs of overfitting.
+  - The IoU on the validation set stabilizes around `0.4837`, showing consistent reconstruction performance on unseen data.
+
+- **Testing Results**:
+  - The IoU on the test set (`0.6957`) surpasses the validation IoU, demonstrating that the model generalizes well to unseen samples.
+  - High precision highlights the model's ability to reconstruct regions with accurate textures and structures, while moderate recall suggests room for improvement in comprehensively covering masked areas.
+
+#### Proposed Improvements
+
+1. **Training with Larger Datasets**:
+   - Using a larger subset of images (beyond the current 3000) could improve model performance by exposing it to more diverse scenes. However, due to computational constraints, this is not feasible at the moment.
+
+2. **Enhanced Skip Connections**:
+   - Add skip connections between more intermediate layers to improve information flow and reduce reconstruction blurring.
+
+3. **Mask Diversity**:
+   - Incorporate masks with irregular shapes and varying sizes to simulate more realistic object removal scenarios.
+
+4. **Loss Function Optimization**:
+   - Introduce perceptual loss or adversarial loss to enhance texture and fine-detail reconstruction.
+---
+
+### Summary
+
+The custom autoencoder with skip connections demonstrates strong inpainting capabilities, with high precision and satisfactory IoU scores on the validation and test sets. While computational constraints currently limit the dataset size, future improvements in mask generation, loss function design, and can further enhance the model's performance. 
 
