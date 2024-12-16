@@ -211,7 +211,7 @@ The chosen preprocessing and feature extraction methods were selected to simulat
 Below are sample illustrations of each step applied to the dataset, showing the transformation of images during preprocessing and feature extraction.
 
 #### Original Image
-![Original Image_masked_Masked_Image](illustrations/Figure_1.jpg)
+![Original Image_masked_Masked_Image](illustrations/Figure_1.png)
 
 
 These illustrations demonstrate the pipeline used to prepare images for training and validation, ensuring that the model receives consistent and meaningful inputs.
